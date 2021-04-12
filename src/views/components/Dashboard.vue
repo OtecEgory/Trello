@@ -3,7 +3,7 @@
         <div class="panel">
             <div 
                 class="plus"
-                @click="addNewList()">
+                @click="$store.commit('addNewList')">
                 +
             </div>
         </div>
@@ -12,11 +12,13 @@
             @dragover.prevent
         >
             <List
+                v-for="item in $store.state.allLists"
+                :key="item.id"
+                :id="item.id"
                 :dragStart="startDrop"
                 :dragend="endDrop"
                 :dragOver="handleDragOver"
-                v-for="item in allList"
-                :key="item.id"
+                :cards="item.cards"
             /> 
         </div>
     </div>
@@ -24,22 +26,21 @@
 
 <script>
 import List from '../../components/List'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 
 
 export default {
     components: { List },
-    data:function(){
-        return{
-            allList:[],
-        }
-    },
+    // mounted() {
+    //     this.$store.dispatch("getLists")
+    // },
     methods:{
-        addNewList(){
-            this.allList.push({
-                id: uuidv4(),
-            })
-        },
+        // addNewList(){
+        //     this.allList.push({
+        //         id: uuidv4(),
+        //         cards: [],
+        //     })
+        // },
         startDrop(e){
             e.currentTarget.classList.add('selected');
         },
@@ -48,8 +49,10 @@ export default {
         },
         handleDragOver(e){
             const listElenemt = e.currentTarget
+            
             const dropZone = document.querySelector('.drop-zone')
             const activeElement = document.querySelector('.list.selected');
+            // const dropZoneList = e.dataTransfer.getData()
             const isMoveable = activeElement !== listElenemt && listElenemt.classList.contains('list');
 
             if (!isMoveable) {
@@ -61,6 +64,7 @@ export default {
                 : listElenemt
 
             dropZone.insertBefore(activeElement, nextElement);
+            // dropZoneList.appendChild(activeElement, nextElement)
         },
     }
 }
@@ -99,8 +103,10 @@ div.list-block
 
 div.list
     cursor: pointer
+    background-color: #26418f
 
 .selected
-    opacity: 0.6
+    opacity: 0.8
+    background-color: #8e99f3
 
 </style>

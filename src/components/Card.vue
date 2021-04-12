@@ -2,9 +2,10 @@
     <div 
         class="card"
         draggable
-        @dragstart="dragStartCard"
-        @dragend="dragEndCard"
-        @dragover="handleDragOverCard"
+        @dragstart.stop="dragStartCard(id)"
+        @dragenter.stop="handleDragEnter"
+        @dragend.stop="dragEndCard(id)"
+        @dragover.stop="handleDragOverCard"
     >
         <input type="name-card" autocomplete="off">
         <div class="footer-card">
@@ -17,9 +18,17 @@
 <script>
 export default {
     props:{
+        id: [String, Number],
+        listId: [String, Number],
         dragStartCard: Function,
         dragEndCard: Function,
-        handleDragOverCard: Function
+        handleDragOverCard: Function,
+    },
+    methods: {
+        handleDragEnter(e) {
+            console.log("Card Drag Enter!")
+            console.log(e.currentTarget)
+        }
     }
 }
 </script>

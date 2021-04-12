@@ -5,7 +5,11 @@
         @dragstart="dragStart"
         @dragend="dragend"
         @dragover="dragOver"
+        @dragenter="handleDragEnter"
     >
+    <div class="header-list">
+        list
+    </div>
         <input type="name-list" autocomplete="off">
         <div class="footer-list">
             <button>Add List</button>
@@ -13,54 +17,64 @@
             </div>
             <div 
                 class="add-card"
-                @click="addNewCard"
+               @click="$store.commit('addNewCard', id)"
             >
                 add a card
             </div>
             <div class="wrap-card">
                 <Card
+                    v-for="item in cards"
+                    :key="item.id" 
+                    :id="item.id"
                     :dragStartCard="startDropCard"
                     :dragEndCard="endDropCard"
                     :handleDragOverCard="handleDragOverCard"
-                    v-for="item in allCards"
-                    :key="item.id" 
                 />
             </div>
         </div>
 </template>
 
 <script>
-import { v4 as uuidv4 } from 'uuid' 
+// import { v4 as uuidv4 } from 'uuid' 
 import Card from './Card'
 export default {
     props: {
+        id: [String, Number],
         dragStart: Function,
         dragend: Function,
         dragOver: Function,
+        cards: Array,
+    },
+    data: function() {
+        return {
+            lastListId: 0,
+        }  
     },
     components: { Card },
-    data:function(){
-        return{
-            allCards:[],
-        }
-    },
     methods:{
-        addNewCard(){
-            this.allCards.push({
-                id: uuidv4()
-            })
+        // addNewCard(){
+        //     this.allCards.push({
+        //         id: uuidv4()
+        //     })
+        // },
+        handleDragEnter(e) {
+            this.$store.commit("setLastListId", this.id)
+            console.log(e)
         },
-        startDropCard(e){
-            e.currentTarget.classList.add('selected-card');
+        startDropCard(){
+            this.$store.commit("setFromListId", this.id)
+            event.currentTarget.classList.add('selected-card');
         },
-        endDropCard(e){
-            e.currentTarget.classList.remove('selected-card');
+        endDropCard(cardId){
+            this.$store.commit("migrateCard", cardId)
+
+            event.currentTarget.classList.remove('selected-card');
         },
         handleDragOverCard(e){
-            const cardElenemt = e.currentTarget
-            const dropZone = document.querySelector('.wrap-card')
-            const activeElement = document.querySelector('.card.selected-card');
-            const isMoveable = activeElement !== cardElenemt && cardElenemt.classList.contains('card');
+            const cardElenemt = e.target
+            const activeElement = document.querySelector('.card.selected-card')
+            const dropZone = activeElement.parentNode
+            const isMoveable = activeElement !== cardElenemt && cardElenemt.classList.contains('card')
 
             if (!isMoveable) {
                 return;
@@ -70,7 +84,7 @@ export default {
                 ? cardElenemt.nextElementSibling
                 : cardElenemt
 
-            dropZone.insertBefore(activeElement, nextElement);
+            dropZone.insertBefore(activeElement, nextElement)
         },
     }
 }
@@ -104,12 +118,17 @@ div.add-card
 div.card
     display: flex
     flex-direction: column
-    width: 200px
+    padding: 5px
     padding-top: 10px
     transition: 0.5s
     transform: 0.5s
+    background-color: #aab6fe
+    margin: 10px 0px
 
 .selected-card
-    background-color: #000
+    display: block
+    background-color: #000051
+    opacity: 0
+    border: 1px solid #000051
 
 </style>
