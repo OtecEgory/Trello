@@ -29,13 +29,14 @@
                     :dragStartCard="startDropCard"
                     :dragEndCard="endDropCard"
                     :handleDragOverCard="handleDragOverCard"
+                    :listId="id"
+                    :cardValue="item.value"
                 />
             </div>
         </div>
 </template>
 
 <script>
-// import { v4 as uuidv4 } from 'uuid' 
 import Card from './Card'
 export default {
     props: {
@@ -52,14 +53,8 @@ export default {
     },
     components: { Card },
     methods:{
-        // addNewCard(){
-        //     this.allCards.push({
-        //         id: uuidv4()
-        //     })
-        // },
-        handleDragEnter(e) {
+        handleDragEnter() {
             this.$store.commit("setLastListId", this.id)
-            console.log(e)
         },
         startDropCard(){
             this.$store.commit("setFromListId", this.id)
@@ -67,23 +62,22 @@ export default {
         },
         endDropCard(cardId){
             this.$store.commit("migrateCard", cardId)
-
             event.currentTarget.classList.remove('selected-card');
         },
         handleDragOverCard(e){
-            const cardElenemt = e.target
-            const activeElement = document.querySelector('.card.selected-card')
-            const dropZone = activeElement.parentNode
-            const isMoveable = activeElement !== cardElenemt && cardElenemt.classList.contains('card')
+            let cardElenemt = e.currentTarget
+            let activeElement = document.querySelector('.selected-card')
+            let dropZone = cardElenemt.parentNode
+            let isMoveable = activeElement !== cardElenemt && cardElenemt.classList.contains('card')
 
             if (!isMoveable) {
                 return;
             }
-            
-            const nextElement = (cardElenemt === activeElement.nextElementSibling)
-                ? cardElenemt.nextElementSibling
-                : cardElenemt
 
+            let nextElement = (cardElenemt === activeElement.nextElementSibling)
+                ? cardElenemt.nextElementSibling
+                : cardElenemt;
+            
             dropZone.insertBefore(activeElement, nextElement)
         },
     }

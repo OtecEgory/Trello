@@ -3,11 +3,16 @@
         class="card"
         draggable
         @dragstart.stop="dragStartCard(id)"
-        @dragenter.stop="handleDragEnter"
         @dragend.stop="dragEndCard(id)"
         @dragover.stop="handleDragOverCard"
     >
-        <input type="name-card" autocomplete="off">
+        <input
+            class="name-card" 
+            type="text" 
+            autocomplete="off"
+            v-model="value"
+            @blur="handleBlur"
+        >
         <div class="footer-card">
         <button>Add Card</button>
             <div class="close">+</div>
@@ -19,17 +24,26 @@
 export default {
     props:{
         id: [String, Number],
+        cardValue: String,
         listId: [String, Number],
         dragStartCard: Function,
         dragEndCard: Function,
         handleDragOverCard: Function,
     },
-    methods: {
-        handleDragEnter(e) {
-            console.log("Card Drag Enter!")
-            console.log(e.currentTarget)
+    data:function(){
+        return {
+            value: this.cardValue
         }
-    }
+    },
+    methods: {
+        handleBlur() {
+            this.$store.commit("getValueCard", {
+                id: this.id,
+                value: this.value, 
+                idList: this.listId
+            })
+        },
+    },
 }
 </script>
 

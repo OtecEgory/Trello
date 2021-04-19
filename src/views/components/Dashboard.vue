@@ -11,36 +11,25 @@
             class="drop-zone"
             @dragover.prevent
         >
-            <List
-                v-for="item in $store.state.allLists"
-                :key="item.id"
-                :id="item.id"
-                :dragStart="startDrop"
-                :dragend="endDrop"
-                :dragOver="handleDragOver"
-                :cards="item.cards"
-            /> 
+        <List
+            v-for="item in $store.state.allLists"
+            :key="item.id"
+            :id="item.id"
+            :dragStart="startDrop"
+            :dragend="endDrop"
+            :dragOver="handleDragOver"
+            :cards="item.cards"
+        /> 
         </div>
     </div>
 </template>
 
 <script>
 import List from '../../components/List'
-// import { v4 as uuidv4 } from 'uuid'
-
 
 export default {
     components: { List },
-    // mounted() {
-    //     this.$store.dispatch("getLists")
-    // },
     methods:{
-        // addNewList(){
-        //     this.allList.push({
-        //         id: uuidv4(),
-        //         cards: [],
-        //     })
-        // },
         startDrop(e){
             e.currentTarget.classList.add('selected');
         },
@@ -48,23 +37,24 @@ export default {
             e.currentTarget.classList.remove('selected');
         },
         handleDragOver(e){
-            const listElenemt = e.currentTarget
-            
-            const dropZone = document.querySelector('.drop-zone')
-            const activeElement = document.querySelector('.list.selected');
-            // const dropZoneList = e.dataTransfer.getData()
-            const isMoveable = activeElement !== listElenemt && listElenemt.classList.contains('list');
+            let listElenemt = e.currentTarget
+            let dropZone = document.querySelector('.drop-zone')
+            let activeElement = document.querySelector('.list.selected');
+            let isMoveable = activeElement !== listElenemt && listElenemt.classList.contains('list');
 
             if (!isMoveable) {
                 return;
             }
+
+            if(!activeElement){
+                return false;
+            }
             
-            const nextElement = (listElenemt === activeElement.nextElementSibling)
+            let nextElement = (listElenemt === activeElement.nextElementSibling)
                 ? listElenemt.nextElementSibling
                 : listElenemt
 
             dropZone.insertBefore(activeElement, nextElement);
-            // dropZoneList.appendChild(activeElement, nextElement)
         },
     }
 }
